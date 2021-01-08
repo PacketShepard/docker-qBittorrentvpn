@@ -3,6 +3,8 @@
 # qBittorrent with WebUI and OpenVPN
 Docker container which runs the latest headless qBittorrent client with WebUI while connecting to OpenVPN with iptables killswitch to prevent IP leakage when the tunnel goes down. This is an automated build linked with Ubuntu.
 
+**Be sure to remove "persist-tun" from your ovpn file or OpenVPN will never be able to recover DNS updates that change the server IP. This happens with many vpn providers as they move servers to evade blacklists, etc.**
+
 ![alt text][preview]
 
 ## Docker Features
@@ -44,7 +46,7 @@ $ docker run --privileged  -d \
 |`PUID`| No | UID applied to config files and downloads |`PUID=99`|
 |`PGID`| No | GID applied to config files and downloads |`PGID=100`|
 |`UMASK`| No | GID applied to config files and downloads |`UMASK=002`|
-|`WEBUI_PORT`| No | Applies WebUI port to qBittorrents config at boot (Must change exposed ports to match)  |`WEBUI_PORT_ENV=8080`|
+|`WEBUI_PORT`| No | Applies WebUI port to qBittorrents config at boot (Must change exposed ports to match)  |`WEBUI_PORT=8080`|
 |`INCOMING_PORT_ENV`| No | Applies Incoming port to qBittorrents config at boot (Must change exposed ports to match) |`INCOMING_PORT_ENV=8999`|
 
 ## Volumes
@@ -79,6 +81,8 @@ qBittorrent throws a [WebUI: Invalid Host header, port mismatch](https://github.
 The container will fail to boot if `VPN_ENABLED` is set to yes or empty and a .ovpn is not present in the /config/openvpn directory. Drop a .ovpn file from your VPN provider into /config/openvpn and start the container again. You may need to edit the ovpn configuration file to load your VPN credentials from a file by setting `auth-user-pass`.
 
 **Note:** The script will use the first ovpn file it finds in the /config/openvpn directory. Adding multiple ovpn files will not start multiple VPN connections.
+
+**Note 2:** Be sure to remove "persist-tun" from your ovpn file or OpenVPN will never be able to recover from server IP change after a DNS update. This happens with many vpn providers as they move servers to evade blacklists, etc.
 
 ## Example auth-user-pass option
 `auth-user-pass credentials.conf`
